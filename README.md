@@ -48,3 +48,8 @@ export default tseslint.config({
   },
 })
 ```
+
+npm i react-icons --save
+npm i @gsap/react gsap
+npm i react-use
+
