@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 
-
 interface BentoTiltProps {
   children: React.ReactNode;
   className?: string;
@@ -17,14 +16,30 @@ interface BentoCardProps {
   description: string;
 }
 
+// BentoTilt
 const BentoTilt: React.FC<BentoTiltProps> = ({ children, className = '' }) => {
   const [transformStyle, setTransformStyle] = useState('');
   const itemRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e) => {
+  // Handle Mouse Move
+  const handleMouseMove = (event: { clientX: number; clientY: number; }) => {
+    if (!itemRef.current) return;
 
+    const { left, top, width, height } =
+      itemRef.current.getBoundingClientRect();
+
+    const relativeX = (event.clientX - left) / width;
+    const relativeY = (event.clientY - top) / height;
+
+    const tiltX = (relativeY - 0.5) * 10;
+    const tiltY = (relativeX - 0.5) * -10;
+
+    const newTransform = `perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(.95, .95, .95)`;
+
+    setTransformStyle(newTransform);
   }
 
+  // Handle Mouse Leave
   const handleMouseLeave = () => {
     setTransformStyle('');
   }
@@ -35,12 +50,14 @@ const BentoTilt: React.FC<BentoTiltProps> = ({ children, className = '' }) => {
       className={className}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      style={{ transform: transformStyle }}
     >
       {children}
     </div>
   )
 }
 
+// BentoCard
 const BentoCard: React.FC<BentoCardProps> = ({ src, title, description }) => {
   return (
     <div className="relative size-full">
@@ -63,6 +80,7 @@ const BentoCard: React.FC<BentoCardProps> = ({ src, title, description }) => {
   )
 }
 
+// Features
 const Features = () => {
   return (
     <section className="bg-black pb-52">
@@ -82,7 +100,7 @@ const Features = () => {
         <BentoTilt className="border-hsla relative mb-7 h-96 w-full overflown-hidden rounded-md md:h-[65vh]">
           <BentoCard 
             src="videos/feature-1.mp4"
-            title={<>radi<b>n</b>t</>}
+            title={<>radia<b>n</b>t</>}
             description="A cross-platform metagame app, turning your activities across Web2 and Web3 games into a rewarding adventure."
           />
         </BentoTilt>
@@ -109,7 +127,7 @@ const Features = () => {
             />
           </BentoTilt>
           <BentoTilt className="bento-tilt-2">
-            <div className="flex size-full flex-col justify-between bg-violet-300 p-5">
+            <div className="flex size-full flex-col justify-between bg-violet-300 p-5 rounded-lg">
               <h1 className="bento-title special-font max-w-64 text-black">
                 M<b>o</b>re co<b>m</b>ing s<b>o</b>on!
               </h1>

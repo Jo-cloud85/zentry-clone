@@ -3,11 +3,14 @@ import gsap from "gsap";
 
 interface AnimatedTitleProps {
   title: string;
+  sectionId?: string;
+  className?: string;
   containerClass?: string;
 }
 
 const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
-  title, containerClass
+  title, 
+  containerClass
 }) => {
   // to help animate the title
   const containerRef = useRef(null);
