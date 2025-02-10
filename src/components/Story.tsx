@@ -1,52 +1,32 @@
-import { useRef } from "react";
 import AnimatedTitle from "./AnimatedTitle";
-import gsap from "gsap";
 import RoundedCorners from "./RoundedCorners";
 import Button from "./Button";
+import { useMorphEffect } from "./hooks/useMorphEffect";
+
+interface MorphImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const MorphImage: React.FC<MorphImageProps> = ({ src, alt, className = '' }) => {
+  const { elementRef, handleMouseLeave, handleMouseMove } = useMorphEffect();
+
+  return (
+    <img 
+      ref={elementRef as React.RefObject<HTMLImageElement>}
+      onMouseLeave={handleMouseLeave}
+      onMouseUp={handleMouseLeave}
+      onMouseEnter={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+      src={src}
+      alt={alt}
+      className={className}
+    />
+  );
+};
 
 const Story = () => {
-  const frameRef = useRef<HTMLImageElement | null>(null);
-
-  // Handle Mouse Leave
-  const handleMouseLeave = () => {
-    const element = frameRef.current;
-
-    if (element) {
-      gsap.to(element, {
-        duration: 0.3,
-        rotateX: 0, 
-        rotateY: 0,
-        ease: 'power1.out'
-      })
-    }
-  }
-
-  // Handle Mouse Move
-  const handleMouseMove = (e: { clientX: number; clientY: number; }) => {
-    const { clientX, clientY } = e;
-    const element = frameRef.current;
-
-    if(!element) return;
-
-    const rect = element.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-
-    gsap.to(element, {
-      duration: 0.3,
-      rotateX, 
-      rotateY,
-      transformPerspective: 500,
-      ease: 'power1.out'
-    })
-  }
-
   return (
     <section
       id="story"
@@ -66,12 +46,7 @@ const Story = () => {
           <div className="story-img-container">
             <div className="story-img-mask">
               <div className="story-img-content">
-                <img 
-                  ref={frameRef}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseUp={handleMouseLeave}
-                  onMouseEnter={handleMouseLeave}
-                  onMouseMove={handleMouseMove}
+                <MorphImage 
                   src="/img/entrance.webp"
                   alt="entrance"
                   className="object-container"

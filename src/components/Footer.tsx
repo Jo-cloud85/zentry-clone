@@ -1,6 +1,5 @@
-import { useRef } from "react";
 import { FaDiscord, FaTwitter, FaYoutube, FaMedium } from "react-icons/fa";
-import gsap from "gsap";
+import { useMorphEffect } from "./hooks/useMorphEffect";
 
 const socialLinks = [
   { href: "https://discord.com", icon: <FaDiscord /> },
@@ -9,58 +8,18 @@ const socialLinks = [
   { href: "https://medium.com", icon: <FaMedium /> },
 ];
 
-interface TextEffectProps {
+interface MorphTextProps {
   text: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
-const TextEffect: React.FC<TextEffectProps> = ({ text, className = '', style = {} }) => {
-  const textRef = useRef<HTMLDivElement | null>(null);
+const MorphText: React.FC<MorphTextProps> = ({ text, className = '', style = {} }) => {
+  const { elementRef, handleMouseLeave, handleMouseMove } = useMorphEffect();
 
-  // Handle Mouse Leave
-  const handleMouseLeave = () => {
-    const element = textRef.current;
-
-    if (element) {
-      gsap.to(element, {
-        duration: 0.3,
-        rotateX: 0, 
-        rotateY: 0,
-        ease: 'power1.out'
-      })
-    }
-  }
-
-  // Handle Mouse Move
-  const handleMouseMove = (e: { clientX: number; clientY: number; }) => {
-    const { clientX, clientY } = e;
-    const element = textRef.current;
-
-    if(!element) return;
-
-    const rect = element.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-
-    gsap.to(element, {
-      duration: 0.3,
-      rotateX, 
-      rotateY,
-      transformPerspective: 500,
-      ease: 'power1.out'
-    })
-  }
-  
   return (
     <div 
-      ref={textRef}
+      ref={elementRef as React.RefObject<HTMLDivElement>}
       className={className}
       style={{
         display: 'inline-block',
@@ -68,6 +27,8 @@ const TextEffect: React.FC<TextEffectProps> = ({ text, className = '', style = {
         ...style
       }}
       onMouseLeave={handleMouseLeave}
+      onMouseUp={handleMouseLeave}
+      onMouseEnter={handleMouseLeave}
       onMouseMove={handleMouseMove}
     >
       {text}
@@ -76,13 +37,9 @@ const TextEffect: React.FC<TextEffectProps> = ({ text, className = '', style = {
 };
 
 const Footer = () => {
-  
-
-  
-  
   return (
     <footer className="w-screen bg-[#5542ff] py-4 text-black">
-        <TextEffect 
+        <MorphText 
           text="Zentry" 
           className="bento-title special-font
             text-[26vw]
